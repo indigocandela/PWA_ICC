@@ -2,10 +2,14 @@
 const express=require("express")
 const mongoose=require("mongoose")
 const bodyParser=require("body-parser")
+const swaggerUi=require('swagger-ui-express')
+const yaml=require('yamljs')
 
 //create express app
 
 const app=express();
+const swaggerDefinition=yaml.load('./swagger.yaml')
+app.use('/docs',swaggerUi.serve,swaggerUi.setup(swaggerDefinition))
 
 app.use(function(req,res,next){
     res.header("Access-Control-Allow-Origin", "*");
