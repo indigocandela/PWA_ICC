@@ -1,0 +1,308 @@
+openapi: 3.0.0
+info:
+  title: PWA_ICC
+  description: MongoDB ExpressJS NodeJS VueJs Proyect
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/
+    description: Localhost development server 
+components:
+  securitySchemes:
+    ApiKeyAuth:        # arbitrary name for the security scheme
+      type: apiKey
+      in: header       # can be "header", "query" or "cookie"
+      name: auth-token
+
+  schemas:
+    Project:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        creatorId:
+          type: mongoose.Schema.ObjectId
+        task:
+          type: mongoose.Schema.ObjectId
+        creationDate:
+          type: date
+    
+    Task:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        creatorId:
+          type: mongoose.Schema.ObjectId
+        projectId:
+          type: mongoose.Schema.ObjectId
+        creationDate:
+          type: date
+        endDate:
+          type: date
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        username:
+          type: string
+        projectId:
+          type: mongoose.Schema.ObjectId
+        phonenumber:
+          type: string
+        password:
+          type: string
+        admin:
+          type: boolean
+
+paths:
+
+  /users/register:
+    post:
+      summary: Register a new User
+      description: Register a new User in the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+
+      responses:
+        200:
+          description: User created succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  _id:
+                    type: string
+
+  /users/login:
+    post:
+      summary: Login as a User
+      description: Login a User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      
+      responses:
+        200:
+          description: User logged in succesfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  data:
+                    type: string
+
+
+  /projects:
+    get:
+      summary: Retrieves a list of Projects
+      description: Retrieves a list of Projects as JSON objects.
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: A list of Projects JSON objects in an array.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+    
+    
+
+    
+  
+  /projects/{id}:
+    get:
+      summary: Check on a specific project
+      description: Retrieves a specific project based on its id.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A Project in the format of a JSON object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+  /projects/delete/{id}:
+    delete:
+      summary: Deletes  a specific project
+      description:  Deletes  a specific project and its tasks
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A Project in the format of a JSON object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+  /projects/update/{id}:
+    put:
+      summary: Updates  a specific project
+      description:  Updates  a specific project
+      requestBody:
+        required: true
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A Project in the format of a JSON object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Project"
+  
+  /projects/{projectId}/newTask:
+    post:
+      summary: Creates  a new specific project task
+      description: Creates  a new specific project task
+      requestBody:
+        required: true
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A Task in the format of a JSON object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+  /projects/{projectId}/{taskid}:
+    get:
+      summary: Retrieves  a new specific project task
+      description: Retrieves  a new specific project task
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+        -- in: path
+          name: taskid
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A Task in the format of a JSON object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+  /projects/{projectId}/{taskid}/delete:
+    delete:
+      summary: Deletes  a new specific project task
+      description: Deletes  a new specific project task
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: projectId
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+        -- in: path
+          name: taskid
+          required: true
+          description: MongoDB id
+          schema:
+            type: string
+      responses:
+        200:
+          description: A Task in the format of a JSON object.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+  /tasks:
+    get:
+      summary: Retrieves a list of Tasks
+      description: Retrieves a list of Tasks as JSON objects.
+      security:
+        - ApiKeyAuth: []
+      responses:
+        200:
+          description: A list of Tasks JSON objects in an array.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+           
+    
+    
+
+    
